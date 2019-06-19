@@ -74,11 +74,11 @@ function init() {
         userControls.getControl(p).setLabel("User " + (p + 1));
     }
 
-    sendMidi(0x90, 0x0C, 0x7F);
-    host.getMidiOutPort(1).sendMidi(0x90, 10, 0x7F); // enable incontrol mode?
+    //sendMidi(0x90, 0x0C, 0x7F);
+    host.getMidiOutPort(1).sendMidi(0x90, 12, 0x7F); // enable incontrol mode?
 
     updateIndications();
-    host.getMidiOutPort(1).sendMidi(0x90, 96, 3);
+    //host.getMidiOutPort(1).sendMidi(0x90, 96, 3);
     pendingLedstate[8] = color.green;
     //host.scheduleTask(blinkTimer, null, 100);
 }
