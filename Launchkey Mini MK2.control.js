@@ -228,7 +228,7 @@ function setPlayMode(mode) {
 
 var incontrol = true;
 
-function onMidi1(status, data1, data2) {
+function onMidi1(status, data1, data2) {// incontrol
     printMidi(status, data1, data2);
 	
 	if (data2 == 127 & !isChannelController(status)) {
@@ -252,7 +252,7 @@ function onMidi1(status, data1, data2) {
 	
 	
 
-    if (isChannelController(status)) // incontrol
+    if (isChannelController(status))
     {
         if (data1 >= 21 && data1 <= 28) {
             var knobIndex = data1 - 21;
