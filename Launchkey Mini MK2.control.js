@@ -16,6 +16,7 @@ var arrow1 = "play";
 var layout = "arranger";
 var knob_function = "volume";
 var pad_enabled = initArray(true, 16);
+var knobs_enabled = false;
 
 
 var db_time = 25; // Debounce time - 10ms allows 1/32 notes at 180bpm
@@ -115,11 +116,13 @@ function updateIndications() {
         userControls.getControl(i).setIndication(!incontrol);
         primaryDevice.getMacro(i).getAmount().setIndication(incontrol);
         //trackBank.getTrack(i).getVolume().setIndication(!incontrol);
-        trackBank.getTrack(i).getVolume().setIndication(true);
-		if (incontrol) {
-			trackBank.getTrack(i).getVolume().setLabel(String(i));
-		} else {
-			trackBank.getTrack(i).getVolume().setLabel(null);
+		if (knobs_enabled) {
+			trackBank.getTrack(i).getVolume().setIndication(true);
+			if (incontrol) {
+				trackBank.getTrack(i).getVolume().setLabel(String(i));
+			} else {
+				trackBank.getTrack(i).getVolume().setLabel(null);
+			}
 		}
 
     }
@@ -281,7 +284,7 @@ function onMidi1(status, data1, data2) {// incontrol
 
     if (isChannelController(status))
     {
-        if (data1 >= 21 && data1 <= 28) {
+        if (data1 >= 21 && data1 <= 28 && knobs_enabled) {
             var knobIndex = data1 - 21;
 			
 			switch (knob_function) {
