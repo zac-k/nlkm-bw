@@ -15,6 +15,10 @@ load("launchkey_common.js");
 var arrow1 = "play";
 var layout = "arranger";
 var knob_function = "volume";
+var pad_enabled = initArray(true, 16);
+
+
+var db_time = 25; // Debounce time - 10ms allows 1/32 notes at 180bpm
 
 var color = {"red": 3, "green": 60, "yellow": 63, "off": 0};
 var play_rec = [false, false];
@@ -169,7 +173,16 @@ function onMidi0(status, data1, data2) // !incontrol
 	
 	if (data1 >= 36 && data1 <= 51) {
 		/* pad inputs when they are not set as note inputs */
-		pad_input.sendRawMidiEvent(status, data1, data2);
+		var pad_index = data1 - 36;
+		
+		/* debounce pad inputs */
+		if (pad_enabled[pad_index]) {			
+			pad_input.sendRawMidiEvent(status, data1, data2);
+			if (status == 137) {
+				pad_enabled[pad_index] = false;
+				host.scheduleTask(function(){pad_enabled[pad_index] = true;}, null, db_time);
+			}
+		}
 	}
 }
 
