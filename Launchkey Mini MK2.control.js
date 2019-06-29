@@ -31,8 +31,16 @@ switch (layout) {
 
 function init() {
     //welcomeSequence();
+	
+	/* Bypass script for keys. Send notes directly to audio engine */
     host.getMidiInPort(0).createNoteInput("Keys", "80????", "90????");
-    host.getMidiInPort(0).createNoteInput("Pads", "89????", "99????");
+	
+	/* Uncomment this to also bypass script for (basic mode) pads */
+    // pad_input = host.getMidiInPort(0).createNoteInput("Pads", "89????", "99????");
+	// pad_input.setShouldConsumeEvents(false);
+	
+	/* Use channel 11 for percussion when using script */
+	pad_input = host.getMidiInPort(0).createNoteInput("Pads", "8a????", "9a????");
 
     host.getMidiInPort(0).setMidiCallback(onMidi0);
     host.getMidiInPort(1).setMidiCallback(onMidi1);
@@ -74,8 +82,9 @@ function init() {
         userControls.getControl(p).setLabel("User " + (p + 1));
     }
 
-    //sendMidi(0x90, 0x0C, 0x7F);
-    host.getMidiOutPort(1).sendMidi(0x90, 12, 0x7F); // enable incontrol mode?
+	/* Extended mode (enables "incontrol") */
+    //sendMidi(0x90, 0x0C, 0x7F); Manual says (159, 12, 127)?
+    host.getMidiOutPort(1).sendMidi(0x90, 12, 0x7F); 
 
     updateIndications();
     //host.getMidiOutPort(1).sendMidi(0x90, 96, 3);
@@ -157,6 +166,11 @@ function onMidi0(status, data1, data2) // !incontrol
             }
         }
     }
+	
+	if (data1 >= 36 && data1 <= 51) {
+		/* pad inputs when they are not set as note inputs */
+		pad_input.sendRawMidiEvent(status, data1, data2);
+	}
 }
 
 function isRecording(is_recording) {
